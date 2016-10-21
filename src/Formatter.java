@@ -14,9 +14,9 @@ public class Formatter {
 
     private char lastLetter;
 
-    Formatter(){
-        input = new InputFile("input");
-        output = new OutputFile("output");
+    Formatter(String inputName, String outputName){
+        input = new InputFile(inputName);
+        output = new OutputFile(outputName);
         currentLetter = ' ';
         lastLetter = ' ';
         indent = 0;
@@ -26,9 +26,10 @@ public class Formatter {
     public enum  SpecificLetter {
         TRIANGLE_OPEN ('{') {
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces, char lastLetter) {
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
                 indent++;
                 output.pushLetter('{');
+
                 output.pushLetter('\n');
 
                 for (int i = 0; i < indent * numberOfSpaces; i++) {
@@ -41,37 +42,51 @@ public class Formatter {
 
         TRIANGLE_CLOSE ('}'){
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces, char lastLetter) {
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
                 if (indent > 0) {
                     indent--;
                 }
 
-                if ((lastLetter != '}') && (lastLetter != ';')) {
                     output.pushLetter('\n');
                     for (int i = 0; i < indent * numberOfSpaces; i++) {
                         output.pushLetter(' ');
                     }
-                }
-                output.pushLetter('}');
-                output.pushLetter('\n');
 
-                for (int i = 0; i < indent * numberOfSpaces; i++) {
-                    output.pushLetter(' ');
-                }
+                output.pushLetter('}');
+
+
 
                 return indent;
             }
         },
 
-        ENTER (';'){
+        SEMICOLON (';'){
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces, char lastLetter) {
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
                 output.pushLetter(';');
+
                 output.pushLetter('\n');
 
                 for (int i = 0; i < indent * numberOfSpaces; i++) {
                     output.pushLetter(' ');
                 }
+
+
+                return indent;
+            }
+        },
+
+        PROBEL (' '){
+            @Override
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
+
+                return indent;
+            }
+        },
+
+        ENTER ('\n'){
+            @Override
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
 
                 return indent;
             }
@@ -88,27 +103,29 @@ public class Formatter {
             return letter;
         }
 
-        public abstract int outLetters(Output output, int indent, int numberOfSpaces, char lastLetter);
+        public abstract int outLetters(Output output, int indent, int numberOfSpaces);
 
     }
 
 
-    public void format() throws IOException {
+    public void format() {
 
-        while (!input.isEOF()) {
-            lastLetter = currentLetter;
-            currentLetter = input.getCurrentLetter();
-            
-            output.pushLetter(currentLetter);
+        boolean b = false;
+            while (!input.isEOF()) {
+                currentLetter = input.getCurrentLetter();
 
-            for (SpecificLetter s : SpecificLetter.values()) {
-                if (currentLetter == s.getLetter()) {
-                    indent = s.outLetters(output, indent, numberOfSpaces, lastLetter);
+                for (SpecificLetter s : SpecificLetter.values()) {
+                    if (currentLetter == s.getLetter()) {
+                        indent = s.outLetters(output, indent, numberOfSpaces);
+                        b = true;
+                    }
 
-                    break;
                 }
 
-            }
+                if (!b) {
+                    output.pushLetter(currentLetter);
+                }
+                b = false;
         }
     }
 }
