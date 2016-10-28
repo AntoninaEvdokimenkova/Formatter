@@ -1,5 +1,3 @@
-import java.io.IOException;
-
 public class Formatter {
 
     public final int numberOfSpaces = 4;
@@ -14,7 +12,7 @@ public class Formatter {
 
     private char lastLetter;
 
-    Formatter(String inputName, String outputName){
+    Formatter(final String inputName, final String outputName) {
         input = new InputFile(inputName);
         output = new OutputFile(outputName);
         currentLetter = ' ';
@@ -23,8 +21,8 @@ public class Formatter {
     }
 
 
-    public enum  SpecificLetter {
-        TRIANGLE_OPEN ('{') {
+    private enum  SpecificLetter {
+        TRIANGLE_OPEN('{') {
             @Override
             public int outLetters(Output output, int indent, int numberOfSpaces) {
                 indent++;
@@ -40,7 +38,7 @@ public class Formatter {
             }
         },
 
-        TRIANGLE_CLOSE ('}'){
+        TRIANGLE_CLOSE('}') {
             @Override
             public int outLetters(Output output, int indent, int numberOfSpaces) {
                 if (indent > 0) {
@@ -54,13 +52,11 @@ public class Formatter {
 
                 output.pushLetter('}');
 
-
-
                 return indent;
             }
         },
 
-        SEMICOLON (';'){
+        SEMICOLON(';') {
             @Override
             public int outLetters(Output output, int indent, int numberOfSpaces) {
                 output.pushLetter(';');
@@ -71,12 +67,11 @@ public class Formatter {
                     output.pushLetter(' ');
                 }
 
-
                 return indent;
             }
         },
 
-        PROBEL (' '){
+        PROBEL(' ') {
             @Override
             public int outLetters(Output output, int indent, int numberOfSpaces) {
 
@@ -84,7 +79,7 @@ public class Formatter {
             }
         },
 
-        ENTER ('\n'){
+        ENTER('\n') {
             @Override
             public int outLetters(Output output, int indent, int numberOfSpaces) {
 
@@ -94,11 +89,11 @@ public class Formatter {
 
         private char letter;
 
-        SpecificLetter(char letter) {
+        SpecificLetter(final char letter) {
             this.letter = letter;
         }
 
-        char getLetter () {
+        char getLetter() {
 
             return letter;
         }
@@ -119,7 +114,6 @@ public class Formatter {
                         indent = s.outLetters(output, indent, numberOfSpaces);
                         b = true;
                     }
-
                 }
 
                 if (!b) {

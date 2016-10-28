@@ -1,0 +1,16 @@
+publicclassBlips{
+    publicstaticvoidmain(String[]args)throwsIOException,ClassNotFoundException{
+        System.out.println("Constructingobjects:");
+        Blip1b1=newBlip1();
+        Blip2b2=newBlip2();
+        ObjectOutputStreamo=newObjectOutputStream(newFileOutputStream("Blips.out"));
+        System.out.println("Savingobjects:");
+        o.writeObject(b1);
+        o.writeObject(b2);
+        o.close();
+        ObjectInputStreamin=newObjectInputStream(newFileInputStream("Blips.out"));
+        System.out.println("Recoveringb1:");
+        b1=(Blip1)in.readObject();
+        
+    }
+}

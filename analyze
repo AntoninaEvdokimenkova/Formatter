@@ -1,0 +1,135 @@
+public class Formatter {
+
+    public final int numberOfSpaces = 4;
+
+    private int indent;
+
+    private Input input;
+
+    private Output output;
+
+    private char currentLetter;
+
+    private char lastLetter;
+
+    Formatter(final String inputName, final String outputName) {
+        input = new InputFile(inputName);
+        output = new OutputFile(outputName);
+       currentLetter = ' ';
+        lastLetter = ' ';
+       indent = 0;
+    }
+5
+
+    private enum  SpecificLetter {
+        TRIANGLE_OPEN('{') {
+            @Override
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
+                indent++;
+               output.pushLetter('{');
+
+                output.pushLetter('\n');
+
+                for (int i = 0; i < indent * numberOfSpaces; i++) {
+                    output.pushLetter(' ');
+                }
+
+                return indent;
+            }
+        },
+4mn + 5
+
+        TRIANGLE_CLOSE('}') {
+            @Override
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
+                if (indent > 0) {
+                    indent--;
+                }
+
+                    output.pushLetter('\n');
+                   for (int i = 0; i < indent * numberOfSpaces; i++) {
+                        output.pushLetter(' ');
+                    }
+
+                output.pushLetter('}');
+
+                return indent;
+            }
+        },
+4mn + 6
+
+        SEMICOLON(';') {
+            @Override
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
+                output.pushLetter(';');
+
+                output.pushLetter('\n');
+
+                for (int i = 0; i < indent * numberOfSpaces; i++) {
+                    output.pushLetter(' ');
+                }
+
+                return indent;
+            }
+        },
+4mn + 3
+
+        PROBEL(' ') {
+            @Override
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
+
+                return indent;
+            }
+        },
+1
+
+        ENTER('\n') {
+            @Override
+            public int outLetters(Output output, int indent, int numberOfSpaces) {
+
+                return indent;
+            }
+        };
+1
+
+        private char letter;
+
+        SpecificLetter(final char letter) {
+            this.letter = letter;
+        }
+2
+
+        char getLetter() {
+
+           return letter;
+        }
+1
+
+        public abstract int outLetters(Output output, int indent, int numberOfSpaces);
+    }
+
+
+
+    public void format() {
+
+2        boolean b = false;
+n            while (!input.isEOF()) {
+2                currentLetter = input.getCurrentLetter();
+
+4m               for (SpecificLetter s : SpecificLetter.values()) {
+2                    if (currentLetter == s.getLetter()) {
+2                        indent = s.outLetters(output, indent, numberOfSpaces);
+1                        b = true;
+                    }
+                }
+20m(4mn + 6)
+1                if (!b) {
+1                    output.pushLetter(currentLetter);
+                }
+1                b = false;
+        }
+    }
+}
+*************************************
+2 + n* (5 + 20*m*(4*m*n + 6))
+

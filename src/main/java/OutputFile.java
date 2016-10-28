@@ -1,11 +1,10 @@
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class OutputFile implements Output{
-    FileWriter writer;
+public class OutputFile implements Output {
+    private FileWriter writer;
 
-    OutputFile(String fileNme) {
+    OutputFile(final String fileNme) {
         try {
             writer = new FileWriter(fileNme, false);
         } catch (IOException ex) {
@@ -14,7 +13,7 @@ public class OutputFile implements Output{
     }
 
     @Override
-    public void pushLetter(char letter) {
+    public void pushLetter(final char letter) {
         try {
             writer.append(letter);
             writer.flush();
