@@ -1,10 +1,10 @@
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class OutputFile implements Output {
+public class WriterFile implements IWriter {
     private FileWriter writer;
 
-    OutputFile(final String fileNme) {
+    WriterFile(final String fileNme) {
         try {
             writer = new FileWriter(fileNme, false);
         } catch (IOException ex) {

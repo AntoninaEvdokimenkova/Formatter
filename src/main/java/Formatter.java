@@ -1,89 +1,98 @@
 public class Formatter {
 
-    public final int numberOfSpaces = 4;
+    private IReader iReader;
 
-    private int indent;
+    private IWriter iWriter;
 
-    private Input input;
 
-    private Output output;
-
-    private char currentLetter;
-
-    private char lastLetter;
-
-    Formatter(final String inputName, final String outputName) {
-        input = new InputFile(inputName);
-        output = new OutputFile(outputName);
-        currentLetter = ' ';
-        lastLetter = ' ';
-        indent = 0;
+    Formatter(final IReader iReader, final IWriter iWriter) {
+        this.iReader = iReader;
+        this.iWriter = iWriter;
     }
 
 
     private enum  SpecificLetter {
         TRIANGLE_OPEN('{') {
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces) {
-                indent++;
-                output.pushLetter('{');
+            public boolean outLetters(final FormatLetter formatLetter) {
+                formatLetter.setEnterAfter(1);
+                formatLetter.setEnterBefore(0);
+                formatLetter.setIndentBefore(0);
 
-                output.pushLetter('\n');
+                int indentAfter = formatLetter.getIndentCurrent() + 1;
+                formatLetter.setIndentAfter(indentAfter);
 
-                for (int i = 0; i < indent * numberOfSpaces; i++) {
-                    output.pushLetter(' ');
-                }
+                formatLetter.setIndentCurrent(indentAfter);
 
-                return indent;
+                return true;
             }
         },
 
         TRIANGLE_CLOSE('}') {
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces) {
-                if (indent > 0) {
-                    indent--;
+            public boolean outLetters(final FormatLetter formatLetter) {
+                if (formatLetter.getEnterAfter() == 0) {
+                    formatLetter.setEnterBefore(1);
+                } else {
+                    formatLetter.setEnterBefore(0);
                 }
 
-                    output.pushLetter('\n');
-                    for (int i = 0; i < indent * numberOfSpaces; i++) {
-                        output.pushLetter(' ');
-                    }
+                formatLetter.setEnterBefore(1);
 
-                output.pushLetter('}');
+                int indentCurrent = formatLetter.getIndentCurrent() - 1;
 
-                return indent;
+                formatLetter.setIndentBefore(indentCurrent);
+
+                indentCurrent = indentCurrent - 1;
+
+                if (indentCurrent >= 0) {
+                    formatLetter.setIndentCurrent(indentCurrent);
+                }
+                formatLetter.setIndentAfter(indentCurrent);
+
+                return true;
             }
         },
 
         SEMICOLON(';') {
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces) {
-                output.pushLetter(';');
+            public boolean outLetters(final FormatLetter formatLetter) {
+                formatLetter.setEnterBefore(0);
+                formatLetter.setIndentBefore(0);
+                formatLetter.setEnterAfter(1);
+                formatLetter.setIndentAfter(formatLetter.getIndentCurrent());
 
-                output.pushLetter('\n');
-
-                for (int i = 0; i < indent * numberOfSpaces; i++) {
-                    output.pushLetter(' ');
-                }
-
-                return indent;
+                return true;
             }
         },
 
         PROBEL(' ') {
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces) {
+            public boolean outLetters(final FormatLetter formatLetter) {
+                if ((formatLetter.getEnterAfter() > 0) || (formatLetter.getIndentAfter() > 0) || (formatLetter.getLetterLast() == formatLetter.getLetter())
+                        || (formatLetter.getLetterLast() == '\n')) {
 
-                return indent;
+                    return false;
+                }
+
+                formatLetter.setEnterBefore(0);
+                formatLetter.setIndentBefore(0);
+                formatLetter.setEnterAfter(0);
+                formatLetter.setIndentAfter(0);
+
+                return true;
             }
         },
 
         ENTER('\n') {
             @Override
-            public int outLetters(Output output, int indent, int numberOfSpaces) {
+            public boolean outLetters(final FormatLetter formatLetter) {
+                formatLetter.setEnterBefore(0);
+                formatLetter.setIndentBefore(0);
+                formatLetter.setEnterAfter(0);
+                formatLetter.setIndentAfter(0);
 
-                return indent;
+                return false;
             }
         };
 
@@ -98,28 +107,78 @@ public class Formatter {
             return letter;
         }
 
-        public abstract int outLetters(Output output, int indent, int numberOfSpaces);
+        public abstract boolean outLetters(FormatLetter formatLetter);
 
     }
 
 
     public void format() {
+        final int numberOfSpaces = 4;
+
+        FormatLetter formatLetter = new FormatLetter(' ', 0, 0, 0, 0, 0, ' ');
+
+        int enterBefore;
+
+        int indentBefore;
+
+        int enterAfter;
+
+        int indentAfter;
+
+        char currentLetter;
 
         boolean b = false;
-            while (!input.isEOF()) {
-                currentLetter = input.getCurrentLetter();
 
-                for (SpecificLetter s : SpecificLetter.values()) {
-                    if (currentLetter == s.getLetter()) {
-                        indent = s.outLetters(output, indent, numberOfSpaces);
-                        b = true;
-                    }
+        boolean access = true;
+
+        while (!iReader.isEOF()) {
+            currentLetter = iReader.getCurrentLetter();
+            formatLetter.setLetter(currentLetter);
+
+            for (SpecificLetter s : SpecificLetter.values()) {
+                if (currentLetter == s.getLetter()) {
+                    access = s.outLetters(formatLetter);
+                    b = true;
+                }
+            }
+
+            if (!b) {
+                formatLetter.setIndentAfter(0);
+                formatLetter.setEnterAfter(0);
+                formatLetter.setIndentBefore(0);
+                formatLetter.setEnterBefore(0);
+            }
+
+            b = false;
+
+            if (access) {
+                enterBefore = formatLetter.getEnterBefore();
+                indentBefore = formatLetter.getIndentBefore();
+                enterAfter = formatLetter.getEnterAfter();
+                indentAfter = formatLetter.getIndentAfter();
+
+                for (int i = 0; i < enterBefore; i++) {
+                    iWriter.pushLetter('\n');
                 }
 
-                if (!b) {
-                    output.pushLetter(currentLetter);
+                for (int i = 0; i < indentBefore * numberOfSpaces; i++) {
+                    iWriter.pushLetter(' ');
                 }
-                b = false;
+
+                iWriter.pushLetter(formatLetter.getLetter());
+
+                for (int i = 0; i < enterAfter; i++) {
+                    iWriter.pushLetter('\n');
+                }
+
+                for (int i = 0; i < indentAfter * numberOfSpaces; i++) {
+                    iWriter.pushLetter(' ');
+                }
+            }
+
+            access = true;
+            formatLetter.setLetterLast(currentLetter);
+
         }
     }
 }

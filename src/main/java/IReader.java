@@ -1,4 +1,4 @@
-public interface Input {
+public interface IReader {
 
     public char getCurrentLetter();
 

@@ -1,3 +1,5 @@
 /out
 .idea
 /target
+formatter-mvn.iml
+src/main/resources/

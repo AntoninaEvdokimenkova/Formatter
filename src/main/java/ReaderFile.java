@@ -2,13 +2,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class InputFile implements Input {
+public class ReaderFile implements IReader {
     private FileReader reader;
     private int c;
     private char cOut;
     private boolean eof;
 
-    InputFile(final String fileNme) {
+    ReaderFile(final String fileNme) {
         try {
             reader = new FileReader(fileNme);
 

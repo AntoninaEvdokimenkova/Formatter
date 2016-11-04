@@ -1,6 +1,15 @@
 public class Main {
     public static void main(String[] args) {
-        Formatter formatter  = new Formatter("input", "output");
+        String inputName = "input";
+
+        String outputName = "output";
+
+        IReader readerFile = new ReaderFile(inputName);
+
+        IWriter writerFile = new WriterFile(outputName);
+
+        Formatter formatter  = new Formatter(readerFile, writerFile);
+
         formatter.format();
     }
 }

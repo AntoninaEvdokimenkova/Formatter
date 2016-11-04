@@ -1,3 +1,3 @@
-public interface Output {
+public interface IWriter {
     public void pushLetter(char letter);
 }
