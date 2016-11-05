@@ -37,7 +37,7 @@ public class FormatterTest {
 
         this.iItalon = new ReaderFile(this.italonName);
 
-        this.formatter  = new Formatter(this.iReaderUse, this.iWriter);
+        this.formatter  = new Formatter();
 
     }
 
@@ -46,7 +46,7 @@ public class FormatterTest {
         char readerLetter = ' ';
         char italonLetter = ' ';
 
-        formatter.format();
+        formatter.format(this.iReaderUse, this.iWriter);
 
         while ((!iReader.isEOF()) && (!iItalon.isEOF())) {
             readerLetter = iReader.getCurrentLetter();

@@ -1,16 +1,4 @@
 public class Formatter {
-
-    private IReader iReader;
-
-    private IWriter iWriter;
-
-
-    Formatter(final IReader iReader, final IWriter iWriter) {
-        this.iReader = iReader;
-        this.iWriter = iWriter;
-    }
-
-
     private enum  SpecificLetter {
         TRIANGLE_OPEN('{') {
             @Override
@@ -112,7 +100,7 @@ public class Formatter {
     }
 
 
-    public void format() {
+    public void format(final IReader iReader, final IWriter iWriter) {
         final int numberOfSpaces = 4;
 
         FormatLetter formatLetter = new FormatLetter(' ', 0, 0, 0, 0, 0, ' ');

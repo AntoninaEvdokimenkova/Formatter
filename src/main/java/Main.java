@@ -8,8 +8,9 @@ public class Main {
 
         IWriter writerFile = new WriterFile(outputName);
 
-        Formatter formatter  = new Formatter(readerFile, writerFile);
+        Formatter formatter  = new Formatter();
 
-        formatter.format();
+        formatter.format(readerFile, writerFile);
+
     }
 }
